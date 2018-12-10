@@ -1,0 +1,53 @@
+// Copyright (c) 2018, Bill Mei
+// Test the Random number generator to make sure
+// the numbers it generates are sufficiently random
+class RandomTest {
+   function void test() {
+      var int a, b, c, d, e, f, i, result;
+      do Screen.clearScreen();
+      do Random.init();
+
+      // Roll a dice 6000 times; each face should have a result of about 1000.
+      let i = 0;
+      while (i < 6000) {
+         let result = Random.randInt(1, 7);
+         if (result = 1) { let a = a + 1; }
+         if (result = 2) { let b = b + 1; }
+         if (result = 3) { let c = c + 1; }
+         if (result = 4) { let d = d + 1; }
+         if (result = 5) { let e = e + 1; }
+         if (result = 6) { let f = f + 1; }
+         let i = i + 1;
+      }
+
+      do Output.println();
+      do Output.printString("Rolled a 1: "); do Output.printInt(a); do Output.println();
+      do Output.printString("Rolled a 2: "); do Output.printInt(b); do Output.println();
+      do Output.printString("Rolled a 3: "); do Output.printInt(c); do Output.println();
+      do Output.printString("Rolled a 4: "); do Output.printInt(d); do Output.println();
+      do Output.printString("Rolled a 5: "); do Output.printInt(e); do Output.println();
+      do Output.printString("Rolled a 6: "); do Output.printInt(f); do Output.println();
+
+      do Sys.wait(1000);
+      do Screen.clearScreen();
+      do Output.moveCursor(0, 0);
+
+      // Fill the screen with pixels, the output
+      // should look like random noise
+      do Output.printString("Filling the screen with random points...");
+      let i = 0;
+      do Screen.setColor(true);
+      while (i < 10000) {
+         let a = Random.randInt(0, 512);
+         let b = Random.randInt(0, 256);
+
+         do Screen.drawPixel(a, b);
+
+         let i = i + 1;
+      }
+
+      do Screen.clearScreen();
+      do Output.moveCursor(0, 0);
+      return;
+   }
+}

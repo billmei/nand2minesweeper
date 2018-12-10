@@ -1,0 +1,70 @@
+// Copyright (c) 2018, Bill Mei
+// A simple FIFO queue, implemented as a doubly-linked list
+// The values stored can only be integers.
+class Queue {
+   field Node head, tail;
+
+   constructor Queue new() {
+      let head = null;
+      let tail = null;
+      return this;
+   }
+
+   // The queue is empty if both head and tail don't point to a Node
+   method boolean isEmpty() {
+      return (head = null) & (tail = null);
+   }
+
+   // Adds a new element to the front of the queue
+   method void enqueue(int value) {
+      var Node node;
+      let node = Node.new(value);
+
+      do node.setNext(head);
+
+      // If there was a next node, link it's previous back to the new node
+      if (head) {
+         do head.setPrev(node);
+      } else {
+         // If this is the first element, point the tail to it too.
+         let tail = node;
+      }
+
+      let head = node;
+      return;
+   }
+
+   // Removes the last element of the queue and returns it
+   method int dequeue() {
+      var Node lastNode;
+      var int value;
+
+      let lastNode = tail;
+
+      if (tail) {
+         let value = tail.getValue();
+         do tail.dispose();
+         let tail = lastNode.getPrev();
+         // If this is the last node, also dereference head.
+         if (tail = head) {
+            let head = null;
+         }
+         return value;
+      } else {
+         // The linked list was empty
+         return null;
+      }
+   }
+
+   method void dispose() {
+      var Node runner, lastNode;
+      let runner = head;
+      while (runner) {
+         let lastNode = runner;
+         let runner = lastNode.getNext();
+         do lastNode.dispose();
+      }
+      do Memory.deAlloc(this);
+      return;
+   }
+}

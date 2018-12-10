@@ -1,0 +1,88 @@
+// Copyright (c) 2018, Bill Mei
+// Minesweeper Game class
+// Contains the core game logic and rules
+class Minesweeper {
+   field Grid grid;
+   field Cursor cursor;
+   field boolean gameLost;
+
+   constructor Minesweeper new() {
+      return this;
+   }
+
+   // Entrypoint: run the game
+   method void run() {
+      var int action, gridWidth, gridHeight, gridPercentMines;
+      let gameLost = false;
+
+      // Base game variables
+      let gridWidth = 24;
+      let gridHeight = 12;
+      let gridPercentMines = 12; // %
+
+      // Initialize objects
+      let grid = Grid.new(gridWidth, gridHeight, gridPercentMines);
+      let cursor = Cursor.new();
+      do cursor.init(grid);
+
+      // Initialize drawing
+      do Strings.displayTitle();
+      do Strings.displayInstructions();
+      do Sprites.drawBorder();
+      do Strings.displayMineCount(grid.getMineCount());
+
+      // Main game loop
+      while (~(action = 4)) {
+         do grid.draw(gameLost | grid.gameWon());
+
+         // action = 1 // [f] key to (un)plant a flag
+         // action = 2 // [space] to reveal (dig) a cell
+         // action = 3 // [r] key to restart the game
+         // action = 4 // [q] key to exit
+         let action = cursor.captureInput();
+
+         // Define what to do with each action captured:
+         if (action = 3) {
+            let gameLost = false;
+            // Redraw
+            do Screen.clearScreen();
+            do Strings.displayTitle();
+            do Strings.displayInstructions();
+            do Sprites.drawBorder();
+
+            // Reinitialize objects
+            do grid.dispose();
+            let grid = Grid.new(gridWidth, gridHeight, gridPercentMines);
+            do cursor.init(grid);
+         }
+
+         if (action = 2) {
+            let gameLost = grid.reveal(cursor.getX(), cursor.getY());
+         }
+
+         if (action = 1) {
+            do grid.flag(cursor.getX(), cursor.getY());
+         }
+
+         do Strings.displayMineCount(Math.max(grid.getMineCount() - grid.getFlagCount(), 0));
+
+         if (gameLost) {
+            do cursor.lock();
+            do Strings.displayGameLost();
+         }
+
+         if (grid.gameWon()) {
+            do cursor.lock();
+            do Strings.displayGameWon();
+         }
+      }
+      return;
+   }
+
+   method void dispose() {
+      do grid.dispose();
+      do cursor.dispose();
+      do Memory.deAlloc(this);
+      return;
+   }
+}

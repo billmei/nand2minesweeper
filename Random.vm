@@ -1,0 +1,102 @@
+function Random.init 0
+call Random.generateSeed 0
+pop temp 0
+push constant 0
+return
+function Random.generateSeed 4
+push constant 0
+pop local 1
+call Strings.displayRandomInstructions 0
+pop temp 0
+label WHILE_EXP0
+push local 1
+not
+not
+if-goto WHILE_END0
+label WHILE_EXP1
+push local 0
+push constant 0
+eq
+not
+if-goto WHILE_END1
+call Keyboard.keyPressed 0
+pop local 0
+goto WHILE_EXP1
+label WHILE_END1
+push constant 6
+push constant 12
+call Output.moveCursor 2
+pop temp 0
+push local 2
+call Output.printInt 1
+pop temp 0
+push constant 37
+call Output.printChar 1
+pop temp 0
+push local 2
+push constant 3
+add
+push constant 100
+call Math.min 2
+pop local 2
+push local 3
+push local 0
+call Maths.charToInt 1
+add
+pop local 3
+push local 0
+push constant 128
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+not
+pop local 1
+label IF_FALSE0
+label WHILE_EXP2
+push local 0
+push constant 0
+eq
+not
+not
+if-goto WHILE_END2
+call Keyboard.keyPressed 0
+pop local 0
+goto WHILE_EXP2
+label WHILE_END2
+goto WHILE_EXP0
+label WHILE_END0
+push local 3
+pop static 0
+call Screen.clearScreen 0
+pop temp 0
+push constant 0
+push constant 0
+call Output.moveCursor 2
+pop temp 0
+call Strings.disposeRandomInstructions 0
+pop temp 0
+push constant 0
+return
+function Random.next 0
+push static 0
+push constant 17
+call Math.multiply 2
+push constant 7907
+add
+push constant 32767
+call Maths.mod 2
+pop static 0
+push static 0
+return
+function Random.randInt 0
+call Random.next 0
+call Math.abs 1
+push argument 1
+push argument 0
+sub
+call Maths.mod 2
+push argument 0
+add
+return

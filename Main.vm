@@ -1,0 +1,19 @@
+function Main.main 1
+call Strings.init 0
+pop temp 0
+call Tutorial.init 0
+pop temp 0
+call Random.init 0
+pop temp 0
+call Minesweeper.new 0
+pop local 0
+push local 0
+call Minesweeper.run 1
+pop temp 0
+push local 0
+call Minesweeper.dispose 1
+pop temp 0
+call Sys.halt 0
+pop temp 0
+push constant 0
+return

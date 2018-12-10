@@ -1,0 +1,17 @@
+// Copyright (c) 2018, Bill Mei
+// More math utilities that are not part of the Math OS class
+class Maths {
+
+   // Calculate x modulo y
+   //           x % y
+   function int mod(int x, int y) {
+      return x - (y * (x / y));
+   }
+
+   // The official Jack compiler does not allow direct coersion of char types
+   // to int types, so we must write a helper function here to bypass the
+   // typechecking done by the compiler.
+   function int charToInt(int _char) {
+      return _char;
+   }
+}

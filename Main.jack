@@ -1,0 +1,29 @@
+// Copyright (c) 2018, Bill Mei
+// Minesweeper game
+class Main {
+   function void main() {
+      var Minesweeper game;
+      // Uncomment and recompile to run the tests
+      // do Main.test();
+
+      // Initialize game strings and random number generator
+      do Strings.init();
+      do Tutorial.init();
+      do Random.init();
+
+      // Start the game
+      let game = Minesweeper.new();
+      do game.run();
+      do game.dispose();
+      do Sys.halt();
+      return;
+   }
+
+   function void test() {
+      do QueueTest.test();
+      do RandomTest.test();
+      do Output.printString("All tests passed successfully.");
+      do Sys.halt();
+      return;
+   }
+}

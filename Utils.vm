@@ -1,0 +1,29 @@
+function Utils.cellToLocation 0
+push constant 4
+push argument 0
+add
+push constant 512
+push argument 1
+push constant 2
+add
+call Math.multiply 2
+add
+return
+function Utils.mineCount 0
+push argument 0
+push constant 1
+eq
+push argument 0
+push constant 2
+eq
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 1
+return
+goto IF_END0
+label IF_FALSE0
+push constant 0
+return
+label IF_END0

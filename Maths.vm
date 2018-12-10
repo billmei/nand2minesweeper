@@ -1,0 +1,12 @@
+function Maths.mod 0
+push argument 0
+push argument 1
+push argument 0
+push argument 1
+call Math.divide 2
+call Math.multiply 2
+sub
+return
+function Maths.charToInt 0
+push argument 0
+return

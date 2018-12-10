@@ -1,0 +1,105 @@
+// Copyright (c) 2018, Bill Mei
+// Draws and manages the cursor on the screen
+class Cursor {
+   field int xPos, yPos;
+   field Grid grid;
+   field boolean locked;
+
+   constructor Cursor new() {
+      return this;
+   }
+
+   // Initialize the cursor over a provided grid
+   method void init(Grid _grid) {
+      let xPos = 0;
+      let yPos = 0;
+      let grid = _grid;
+      let locked = false;
+      return;
+   }
+
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   // Loop to await user input. Returns the action
+   // specified by the user's keypress
+   method int captureInput() {
+      var char key;
+      var int action;
+      let action = 0;
+
+      while (action = 0) {
+         if (~locked) {
+            // Redraw the grid when moving the cursor
+            do grid.draw(false);
+            do Sprites.drawCursor(Utils.cellToLocation(xPos, yPos));
+         }
+
+         // Keydown
+         while (key = 0) {
+            let key = Keyboard.keyPressed();
+         }
+
+         if ((key = 130) & (~locked)) { do __moveLeft__();  } // Left Arrow
+         if ((key = 131) & (~locked)) { do __moveUp__();    } // Up Arrow
+         if ((key = 132) & (~locked)) { do __moveRight__(); } // Right Arrow
+         if ((key = 133) & (~locked)) { do __moveDown__();  } // Down Arrow
+
+         if (key = 70) { let action = 1; } // [f] key to (un)plant a flag
+         if (key = 32) { let action = 2; } // [space] to reveal (dig) a cell
+         if (key = 82) { let action = 3; } // [r] key to restart the game
+         if (key = 81) { let action = 4; } // [q] key to exit
+
+         // Keyup
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+         }
+      }
+      return action;
+   }
+
+   // Gets the cursor's current X position
+   method int getX() {
+      return xPos;
+   }
+
+   // Gets the cursor's current Y position
+   method int getY() {
+      return yPos;
+   }
+
+   // Lock the cursor, prevent it from moving
+   method void lock() {
+      let locked = true;
+      return;
+   }
+   // Unlock the cursor, allow it to move
+   method void unlock () {
+      let locked = false;
+      return;
+   }
+
+   /* BEGIN PRIVATE METHODS */
+   method void __moveLeft__() {
+      let xPos = Math.max(xPos - 1, 0);
+      return;
+   }
+
+   method void __moveUp__() {
+      let yPos = Math.max(yPos - 1, 0);
+      return;
+   }
+
+   method void __moveRight__() {
+      let xPos = Math.min(xPos + 1, grid.getWidth() - 1);
+      return;
+   }
+
+   method void __moveDown__() {
+      let yPos = Math.min(yPos + 1, grid.getHeight() - 1);
+      return;
+   }
+   /* END PRIVATE METHODS */
+}

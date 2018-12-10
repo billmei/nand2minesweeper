@@ -1,0 +1,24 @@
+// Copyright (c) 2018, Bill Mei
+// Miscellaneous utility functions which don't fit anywhere else.
+class Utils {
+   // Takes a combination of x, y cell coordinates and converts it into a memory
+   // location for the 16x16 draw function
+   function int cellToLocation(int cellX, int cellY) {
+      // 512 = 32 * 16
+      // 4 is the X offset (to center the board)
+      // 2 is the Y offset (to center the board)
+      return 4 + cellX + (512 * (cellY + 2));
+   }
+
+   // Returns 1 if the given cell value is a mine, 0 otherwise.
+   function int mineCount(int cellValue) {
+      // CELL_MINE = 1
+      // Need also to account for flags:
+      // CELL_BOGEY = 2
+      if ((cellValue = 1) | (cellValue = 2)) {
+         return 1;
+      } else {
+         return 0;
+      }
+   }
+}

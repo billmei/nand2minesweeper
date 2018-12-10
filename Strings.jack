@@ -1,0 +1,98 @@
+// Copyright (c) 2018, Bill Mei
+// Class used for managing the game's string display
+class Strings {
+   static String title, mineCount,
+      instructionsA, instructionsB,
+      gameLost, gameWon, restart,
+      randomTitle, randomA, randomB, randomC, randomD;
+
+   function void init() {
+      // Initialize all the strings as static variables, so they do not take up
+      // heap space when re-constructing the string multiple times.
+      let title = "MINESWEEPER";
+      let mineCount = "Mines remaining:    ";
+      let instructionsA = "Controls: Arrow keys to move cursor";
+      let instructionsB = "[f] for flag   [space] to reveal   [r] to restart   [q] to quit";
+      let gameLost = "You stepped on a mine, game over!";
+      let gameWon = "You won the game, congratulations!";
+      let restart = "Press [r] to restart.";
+      let randomTitle = "RANDOM NUMBER GENERATOR INITIALIZATION";
+      let randomA = "We need to generate some noise to seed the RNG.";
+      let randomB = "Type some keys on your keyboard as randomly as you can until";
+      let randomC = "the randomness counter reaches 100%, and then press [enter].";
+      let randomD = "Randomness: ";
+      return;
+   }
+
+   // Prints the title
+   function void displayTitle() {
+      do Output.moveCursor(0, 26);
+      do Output.printString(title);
+      return;
+   }
+
+   // Prints the number of mines remaining below the title
+   function void displayMineCount(int count) {
+      do Output.moveCursor(21, 44);
+      do Output.printString(mineCount);
+      do Output.moveCursor(21, 61);
+      do Output.printInt(count);
+      return;
+   }
+
+   // Prints the game won status
+   function void displayGameLost() {
+      do Strings.displayStatus(gameLost, restart);
+      return;
+   }
+
+   // Prints the game lost status
+   function void displayGameWon() {
+      do Strings.displayStatus(gameWon, restart);
+      return;
+   }
+
+   // Prints a string to the status section (above the game area)
+   function void displayStatus(String firstLine, String secondLine) {
+      do Output.moveCursor(0, 15);
+      do Output.printString(firstLine);
+      do Output.moveCursor(1, 21);
+      do Output.printString(secondLine);
+      return;
+   }
+
+   // Prints the instructions below the game area
+   function void displayInstructions() {
+      do Output.moveCursor(21, 0);
+      do Output.printString(instructionsA);
+      do Output.moveCursor(22, 0);
+      do Output.printString(instructionsB);
+      return;
+   }
+
+   // Print instructions for initializing the Random Number Generator
+   function void displayRandomInstructions() {
+      do Output.printString(randomTitle);
+      do Output.println();
+      do Output.println();
+      do Output.printString(randomA);
+      do Output.println();
+      do Output.printString(randomB);
+      do Output.println();
+      do Output.printString(randomC);
+      do Output.println();
+      do Output.println();
+      do Output.printString(randomD);
+      return;
+   }
+
+   // Deallocate the RNG initialization instruction strings to free up memory space
+   function void disposeRandomInstructions() {
+      do randomTitle.dispose();
+      do randomA.dispose();
+      do randomB.dispose();
+      do randomC.dispose();
+      do randomD.dispose();
+      return;
+   }
+}

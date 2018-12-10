@@ -1,0 +1,45 @@
+// Copyright (c) 2018, Bill Mei
+// One node of a doubly-linked list.
+class Node {
+   field int value;
+   field Node prev, next;
+
+   constructor Node new(int _value) {
+      let value = _value;
+      let prev = null;
+      let next = null;
+      return this;
+   }
+
+   // Get pointer to next node (if any)
+   method Node getNext() {
+      return next;
+   }
+
+   // Get pointer to previous node (if any)
+   method Node getPrev() {
+      return prev;
+   }
+
+   // Get the value of the node
+   method int getValue() {
+      return value;
+   }
+
+   // Set the next pointer to the provided node
+   method void setNext(Node node) {
+      let next = node;
+      return;
+   }
+
+   // Set the prev pointer to the provided node
+   method void setPrev(Node node) {
+      let prev = node;
+      return;
+   }
+
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+}

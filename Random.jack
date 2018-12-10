@@ -1,0 +1,66 @@
+// Copyright (c) 2018, Bill Mei
+// Pseudorandom number generator
+// Uses the LCG Algorithm:
+// https://en.wikipedia.org/wiki/Linear_congruential_generator
+class Random {
+   static int lastInt;
+
+   function void init() {
+      do Random.generateSeed();
+      return;
+   }
+
+   // Use keyboard presses as noise to seed the Random Number Generator
+   function void generateSeed() {
+      var char key;
+      var boolean done;
+      var int randomnessCounter, seed;
+      let done = false;
+
+      do Strings.displayRandomInstructions();
+
+      while (~done) {
+         // Keydown
+         while (key = 0) {
+            let key = Keyboard.keyPressed();
+         }
+         do Output.moveCursor(6, 12);
+         do Output.printInt(randomnessCounter);
+         do Output.printChar(37); // %
+         let randomnessCounter = Math.min(randomnessCounter + 3, 100);
+
+         // Add the key to the seed
+         let seed = seed + Maths.charToInt(key);
+
+         if (key = 128) { let done = true; } // [enter] key to exit
+
+         // Keyup
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+         }
+      }
+
+      // Initialize the lastInt with the seed.
+      let lastInt = seed;
+      do Screen.clearScreen();
+      do Output.moveCursor(0, 0);
+      do Strings.disposeRandomInstructions();
+      return;
+   }
+
+
+   // Next random integer created by the LCG.
+   function int next() {
+      // modulus = 32767 (max 16-bit signed int)
+      // multiplier = 7907 (arbitrary prime number)
+      // increment = 17 (arbitrary coprime number)
+      let lastInt = Maths.mod((lastInt * 17) + 7907, 32767);
+      return lastInt;
+   }
+
+   // Return a random integer between the
+   // lower (inclusive) and upper (exclusive) ranges.
+   function int randInt(int lower, int upper) {
+      return Maths.mod(Math.abs(Random.next()), upper - lower) + lower;
+   }
+}

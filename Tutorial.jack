@@ -1,0 +1,94 @@
+// Copyright (c) 2018, Bill Mei
+// Tutorial / welcome screen for the game
+class Tutorial {
+   static String
+      tutorialA,
+      tutorialB,
+      tutorialC,
+      tutorialD,
+      tutorialE,
+      tutorialF,
+      tutorialG,
+      tutorialH,
+      tutorialI,
+      tutorialJ,
+      tutorialK,
+      tutorialL;
+
+   function void init() {
+      var char key;
+      var boolean done;
+
+      let tutorialA = "HOW TO PLAY:";
+
+      let tutorialB = "Use the arrow keys to move the cursor around the grid.";
+
+      let tutorialC = "Press [space] to reveal a cell under your cursor.";
+      let tutorialD = "If you reveal a mine, it explodes, and the game is over!";
+      let tutorialE = "If you reveal a cell and it is not a mine, then a number";
+      let tutorialF = "will be shown on that cell. This number indicates the";
+      let tutorialG = "number of mines that are adjacent to that cell,";
+      let tutorialH = "in all 8 directions (horizontally, vertically, and diagonally)";
+
+      let tutorialI = "Press [f] to plant a flag over a cell you suspect is a mine.";
+      let tutorialJ = "This way, you can remind yourself which cells to avoid.";
+      let tutorialK = "Press [f] again to remove the flag.";
+
+      let tutorialL = "Press [enter] to start the game!";
+
+      do Strings.displayTitle();
+      do Output.println();
+      do Output.println();
+      do Output.printString(tutorialA); do Output.println();
+      do Output.println();
+      do Output.printString(tutorialB); do Output.println();
+      do Output.println();
+      do Output.printString(tutorialC); do Output.println();
+      do Output.printString(tutorialD); do Output.println();
+      do Output.printString(tutorialE); do Output.println();
+      do Output.printString(tutorialF); do Output.println();
+      do Output.printString(tutorialG); do Output.println();
+      do Output.printString(tutorialH); do Output.println();
+      do Output.println();
+      do Output.printString(tutorialI); do Output.println();
+      do Output.printString(tutorialJ); do Output.println();
+      do Output.printString(tutorialK); do Output.println();
+      do Output.println();
+      do Output.println();
+      do Output.println();
+      do Output.printString(tutorialL);
+
+      let done = false;
+      while (~done) {
+         // Keydown
+         while (key = 0) {
+            let key = Keyboard.keyPressed();
+         }
+
+         if (key = 128) { let done = true; } // [enter] key to exit
+
+         // Keyup
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+         }
+      }
+      do Screen.clearScreen();
+      do Output.moveCursor(0, 0);
+
+      // Dispose the strings to recycle their memory.
+      do tutorialA.dispose();
+      do tutorialB.dispose();
+      do tutorialC.dispose();
+      do tutorialD.dispose();
+      do tutorialE.dispose();
+      do tutorialF.dispose();
+      do tutorialG.dispose();
+      do tutorialH.dispose();
+      do tutorialI.dispose();
+      do tutorialJ.dispose();
+      do tutorialK.dispose();
+      do tutorialL.dispose();
+
+      return;
+   }
+}

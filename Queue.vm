@@ -1,0 +1,106 @@
+function Queue.new 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push constant 0
+pop this 0
+push constant 0
+pop this 1
+push pointer 0
+return
+function Queue.isEmpty 0
+push argument 0
+pop pointer 0
+push this 0
+push constant 0
+eq
+push this 1
+push constant 0
+eq
+and
+return
+function Queue.enqueue 1
+push argument 0
+pop pointer 0
+push argument 1
+call Node.new 1
+pop local 0
+push local 0
+push this 0
+call Node.setNext 2
+pop temp 0
+push this 0
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 0
+push local 0
+call Node.setPrev 2
+pop temp 0
+goto IF_END0
+label IF_FALSE0
+push local 0
+pop this 1
+label IF_END0
+push local 0
+pop this 0
+push constant 0
+return
+function Queue.dequeue 2
+push argument 0
+pop pointer 0
+push this 1
+pop local 0
+push this 1
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 1
+call Node.getValue 1
+pop local 1
+push this 1
+call Node.dispose 1
+pop temp 0
+push local 0
+call Node.getPrev 1
+pop this 1
+push this 1
+push this 0
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+pop this 0
+label IF_FALSE1
+push local 1
+return
+goto IF_END0
+label IF_FALSE0
+push constant 0
+return
+label IF_END0
+function Queue.dispose 2
+push argument 0
+pop pointer 0
+push this 0
+pop local 0
+label WHILE_EXP0
+push local 0
+not
+if-goto WHILE_END0
+push local 0
+pop local 1
+push local 1
+call Node.getNext 1
+pop local 0
+push local 1
+call Node.dispose 1
+pop temp 0
+goto WHILE_EXP0
+label WHILE_END0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return

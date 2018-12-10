@@ -1,0 +1,46 @@
+// Copyright (c) 2018, Bill Mei
+// Test the Queue class to make sure it works
+class QueueTest {
+   function void test() {
+      var Queue q1, q2, q3;
+
+      let q1 = Queue.new();
+      do q1.enqueue(1);
+      do q1.enqueue(2);
+      do q1.enqueue(3);
+
+      let q2 = Queue.new();
+
+      let q3 = Queue.new();
+      do q3.enqueue(1);
+      do q3.enqueue(2);
+      do q3.enqueue(3);
+
+      do Output.printInt(q1.dequeue());
+      do Output.printInt(q1.isEmpty());
+      do Output.printInt(q1.dequeue());
+      do Output.printInt(q1.isEmpty());
+      do Output.printInt(q1.dequeue());
+      do Output.printInt(q1.isEmpty());
+      do Output.println();
+      do q1.dispose();
+
+      do Output.printInt(q2.isEmpty());
+      do Output.printInt(q2.dequeue());
+      do Output.println();
+      do q2.dispose();
+
+      do Output.printInt(q3.dequeue());
+      do q3.enqueue(4);
+      do Output.printInt(q3.dequeue());
+      do q3.enqueue(5);
+      do Output.printInt(q3.dequeue());
+      do Output.printInt(q3.dequeue());
+      do Output.printInt(q3.dequeue());
+      do Output.println();
+      do q3.dispose();
+
+      do Output.moveCursor(0, 0);
+      return;
+   }
+}

@@ -1,0 +1,281 @@
+// Copyright (c) 2018, Bill Mei
+// Constants:
+// CELL_CLOSED = 0 (nothing under this cell, not revealed)
+// CELL_MINE   = 1 (mine under this cell,    not revealed)
+// CELL_BOGEY  = 2 (flag over a mine,        not revealed)
+// CELL_FLAG   = 3 (flag over empty cell,    not revealed)
+// CELL_REVEALED_EMPTY = 4 (nothing under this cell,  revealed)
+
+// The main grid class, this is instantiated as a singleton.
+class Grid {
+   field Array internalGrid;
+   field int colWidth, rowHeight, flagCount, mineProbability, mineCount;
+   field boolean firstMove;
+
+   constructor Grid new(int _colWidth, int _rowHeight, int _mineProbability) {
+      // mineProbability is the probability (out of 100) that any given cell is a mine.
+      var int j;
+      let j = 0;
+
+      // Set up field variables
+      let mineProbability = _mineProbability;
+      let colWidth = _colWidth;
+      let rowHeight = _rowHeight;
+      let internalGrid = Array.new(rowHeight);
+      let mineCount = 0;
+      let flagCount = 0;
+      let firstMove = true;
+
+      // Initialize the grid to all 0 at first
+      while (j < rowHeight) {
+         let internalGrid[j] = Array.new(colWidth);
+         do __placeMines__(internalGrid[j]);
+         let j = j + 1;
+      }
+
+      return this;
+   }
+
+   method void dispose() {
+      // Dispose each of the grid's rows
+      var int rowIdx;
+      var Array rowArr;
+      let rowIdx = 0;
+      while (rowIdx < rowHeight) {
+         let rowArr = internalGrid[rowIdx];
+         do rowArr.dispose();
+         let rowIdx = rowIdx + 1;
+      }
+      // Then dispose of the grid
+      do internalGrid.dispose();
+
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   // Getter helper because the built-in Jack compiler
+   // doesn't know how to handle something like internalGrid[x][y]
+   method int get(int colIdx, int rowIdx) {
+      var Array rowArr;
+      let rowArr = internalGrid[rowIdx];
+      return rowArr[colIdx];
+   }
+
+   // Setter helper because the built-in Jack compiler
+   // doesn't know how to handle something like internalGrid[x][y]
+   method void set(int colIdx, int rowIdx, int value) {
+      var Array rowArr;
+      let rowArr = internalGrid[rowIdx];
+      let rowArr[colIdx] = value;
+      return;
+   }
+
+   // Get the width of the grid
+   method int getWidth() {
+      return colWidth;
+   }
+
+   // Get the height of the grid
+   method int getHeight() {
+      return rowHeight;
+   }
+
+   // Get the total number of mines
+   method int getMineCount() {
+      return mineCount;
+   }
+
+   // Get the number of flags planted so far
+   method int getFlagCount() {
+      return flagCount;
+   }
+
+   // Reveals (digs) the current cell.
+   // Returns true if the cell was a mine
+   // Returns false if the cell was not a mine
+   method boolean reveal(int x, int y) {
+      var int cell;
+      // If this is the first move, force the cell to not be a mine
+      if (firstMove) {
+         // CELL_CLOSED = 0
+         do set(x, y, 0);
+         let firstMove = false;
+      }
+
+      let cell = get(x, y);
+
+      // CELL_MINE = 1
+      if (cell = 1) {
+         return true;
+      }
+      // CELL_CLOSED = 0
+      if (cell = 0) {
+         // If there are zero neighboring mines, run a flood fill algorithm to
+         // reveal the surrounding cells
+         if (__neighborMineCount__(x, y) = 0) {
+            do __floodReveal__(x, y);
+         }
+         // CELL_REVEALED_EMPTY = 4
+         do set(x, y, 4);
+      }
+
+      // Only empty cells can be dug; do nothing for all other cells.
+      return false;
+   }
+
+   // Plant a flag at the current cell
+   // If a flag is already on the current cell, then it unplants the flag
+   // and restores the cell to what was previously under it.
+   method void flag(int x, int y) {
+      var int cell;
+
+      let cell = get(x, y);
+      if (cell = 0) { do set(x, y, 3); let flagCount = flagCount + 1; } // CELL_CLOSED → CELL_FLAG
+      if (cell = 3) { do set(x, y, 0); let flagCount = flagCount - 1; } // CELL_FLAG  → CELL_CLOSED
+      if (cell = 2) { do set(x, y, 1); let flagCount = flagCount - 1; } // CELL_BOGEY → CELL_MINE
+      if (cell = 1) { do set(x, y, 2); let flagCount = flagCount + 1; } // CELL_MINE  → CELL_BOGEY
+
+      // Flags cannot be planted on empty cells, so do nothing for empty cells.
+      return;
+   }
+
+   // Check if the game is won or not
+   method boolean gameWon() {
+      // The game is won if and only if the following conditions are met:
+      //  (1) zero remaining cells have CELL_CLOSED set
+      //  (2) zero remaining cells have CELL_FLAG set
+      var int rowIdx, colIdx, cell;
+
+      let rowIdx = 0;
+      while (rowIdx < rowHeight) {
+         let colIdx = 0;
+         while (colIdx < colWidth) {
+            let cell = get(colIdx, rowIdx);
+            if ((cell = 0) | (cell = 3)) {
+               return false;
+            }
+            let colIdx = colIdx + 1;
+
+         }
+         let rowIdx = rowIdx + 1;
+      }
+      return true;
+   }
+
+   // Draw the Grid to the screen
+   method void draw(boolean showMines) {
+      // Note: The screen is 32 cells wide by 16 cells tall
+      var int rowIdx, colIdx, cell;
+
+      let rowIdx = 0;
+      while (rowIdx < rowHeight) {
+         let colIdx = 0;
+         while (colIdx < colWidth) {
+            let cell = get(colIdx, rowIdx);
+
+            // CELL_CLOSED
+            if (cell = 0) {
+               do Sprites.drawClosedCell(Utils.cellToLocation(colIdx, rowIdx));
+            }
+
+            // CELL_MINE
+            if (cell = 1) {
+               if (showMines) {
+                  do Sprites.drawMineCell(Utils.cellToLocation(colIdx, rowIdx));
+               } else {
+                  do Sprites.drawClosedCell(Utils.cellToLocation(colIdx, rowIdx));
+               }
+            }
+
+            // CELL_BOGEY | CELL_FLAG
+            if ((cell = 2) | (cell = 3)) {
+               do Sprites.drawFlagCell(Utils.cellToLocation(colIdx, rowIdx));
+            }
+
+            // CELL_REVEALED_EMPTY
+            if (cell = 4) {
+               do Sprites.drawNumberedCell(__neighborMineCount__(colIdx, rowIdx), Utils.cellToLocation(colIdx, rowIdx));
+            }
+            let colIdx = colIdx + 1;
+         }
+         let rowIdx = rowIdx + 1;
+      }
+      return;
+   }
+
+   /* BEGIN PRIVATE METHODS */
+   // Randomly place mines along a row
+   method void __placeMines__(Array row) {
+      var int colIdx;
+      let colIdx = 0;
+      while (colIdx < colWidth) {
+         if (Random.randInt(0, 100) < mineProbability) {
+            // CELL_MINE = 1
+            let row[colIdx] = 1;
+            let mineCount = mineCount + 1;
+         } else {
+            // CELL_EMPTY = 0
+            let row[colIdx] = 0;
+         }
+         let colIdx = colIdx + 1;
+
+      }
+      return;
+   }
+
+   // Breadth-first search flood fill algorithm
+   method void __floodReveal__(int initialX, int initialY) {
+      // We can't use a recursive algorithm and we must use a queue
+      // because the HACK computer's call stack isn't big enough to handle
+      // the large number of recursive calls we want to make.
+      var Queue queue;
+      var int x, y, cell;
+      let queue = Queue.new();
+      do __enqueueNeighbors__(queue, initialX, initialY);
+
+      while (~queue.isEmpty()) {
+         // The queue's nodes come in a tuple pair with x first, y second.
+         let x = queue.dequeue();
+         let y = queue.dequeue();
+         // CELL_CLOSED = 0
+         if (get(x, y) = 0) {
+            // CELL_REVEALED_EMPTY = 4
+            do set(x, y, 4);
+            if (__neighborMineCount__(x, y) = 0) {
+               do __enqueueNeighbors__(queue, x, y);
+            }
+         }
+      }
+
+      do queue.dispose();
+      return;
+   }
+
+   // Enqueue all neighboring cells into the provided queue
+   method void __enqueueNeighbors__(Queue queue, int x, int y) {
+      if (((x - 1) > -1)       & ((y - 1) > -1)       ) { do queue.enqueue(x - 1); do queue.enqueue(y - 1); }
+      if (((x - 1) > -1)                              ) { do queue.enqueue(x - 1); do queue.enqueue(y    ); }
+      if (((x - 1) > -1)       & ((y + 1) < rowHeight)) { do queue.enqueue(x - 1); do queue.enqueue(y + 1); }
+      if (                       ((y - 1) > -1)       ) { do queue.enqueue(x    ); do queue.enqueue(y - 1); }
+      if (                       ((y + 1) < rowHeight)) { do queue.enqueue(x    ); do queue.enqueue(y + 1); }
+      if (((x + 1) < colWidth) & ((y - 1) > -1)       ) { do queue.enqueue(x + 1); do queue.enqueue(y - 1); }
+      if (((x + 1) < colWidth)                        ) { do queue.enqueue(x + 1); do queue.enqueue(y    ); }
+      if (((x + 1) < colWidth) & ((y + 1) < rowHeight)) { do queue.enqueue(x + 1); do queue.enqueue(y + 1); }
+      return;
+   }
+
+   // Gives the number of neighboring cells which are mines
+   method int __neighborMineCount__(int x, int y) {
+      var int count;
+      if (((x - 1) > -1)       & ((y - 1) > -1)       ) { let count = count + Utils.mineCount(get(x - 1, y - 1)); }
+      if (((x - 1) > -1)                              ) { let count = count + Utils.mineCount(get(x - 1, y    )); }
+      if (((x - 1) > -1)       & ((y + 1) < rowHeight)) { let count = count + Utils.mineCount(get(x - 1, y + 1)); }
+      if (                       ((y - 1) > -1)       ) { let count = count + Utils.mineCount(get(x    , y - 1)); }
+      if (                       ((y + 1) < rowHeight)) { let count = count + Utils.mineCount(get(x    , y + 1)); }
+      if (((x + 1) < colWidth) & ((y - 1) > -1)       ) { let count = count + Utils.mineCount(get(x + 1, y - 1)); }
+      if (((x + 1) < colWidth)                        ) { let count = count + Utils.mineCount(get(x + 1, y    )); }
+      if (((x + 1) < colWidth) & ((y + 1) < rowHeight)) { let count = count + Utils.mineCount(get(x + 1, y + 1)); }
+      return count;
+   }
+   /* END PRIVATE METHODS */
+}
