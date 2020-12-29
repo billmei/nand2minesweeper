@@ -11,7 +11,7 @@ nand2tetris is one of the most rewarding computer science courses I've taken. Th
 
 ## Who are you?
 
-Nice to meet you, I'm [Bill Mei](https://billmei.net). I help companies build React and Ruby on Rails apps. [Get in touch if you want to hire me](https://billmei.net/contact). I'm also writing a book to help you learn how to write [maintainable, easy-to-understand CSS](https://www.painlesscss.com).
+I'm [Bill Mei](https://billmei.net), the author of [Painless CSS](https://www.painlesscss.com), and professional software developer. [Hire me](https://billmei.net/contact/).
 
 ## How to load the game
 
